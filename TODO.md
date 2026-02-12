@@ -1,8 +1,8 @@
 # TODO List (Write your name in front the tasks you want to take on or help with)
 
 * QT UI 
-    * QML: [Docs](https://doc.qt.io/qt-6/qtqml-documents-topic.html)
-    * DBUS Client: [QT D-Bus Docs](https://doc.qt.io/qt-6/qtdbus-index.html)
+    * Cavaire  QML: [Docs](https://doc.qt.io/qt-6/qtqml-documents-topic.html)
+    * Cavaire DBUS Client: [QT D-Bus Docs](https://doc.qt.io/qt-6/qtdbus-index.html)
 * Go Backend
     * internal/dbus:
         * [D-Bus Spec](https://dbus.freedesktop.org/doc/dbus-specification.html)
@@ -16,6 +16,7 @@
         * [Scuffed Roadmap (for idea)](https://discord.com/channels/1418564915740016861/1418564919418159156/1470486833497636955)
     * internal/polkit
         * TODO (idk this yet, very important regardless!!)
+
 
 * Other Important Resources
     [Secure Programming](https://dwheeler.com/secure-programs/)
