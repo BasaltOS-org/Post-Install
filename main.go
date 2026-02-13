@@ -1,15 +1,18 @@
 package main
 
 import (
-	"time"
-	"BasaltPostInstallAssistant/internal/ipc"
-
-
+	"BasaltPostInstallAssistant/internal/methods/packages"
+	"BasaltPostInstallAssistant/utils"
 )
 
-func main(){
+func init() {
+	utils.InitLogger()
+}
 
-	go ipc.Server()
-	go ipc.Client()
-	time.Sleep(3000 * time.Second)
+func main() {
+	var TestPackage packages.PackageGroup = packages.PackageGroup{
+		Name:     "test",
+		Packages: []string{"vim", "go", "lua"},
+	}
+	TestPackage.Install()
 }

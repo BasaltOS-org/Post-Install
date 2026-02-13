@@ -22,3 +22,9 @@
     [Secure Programming](https://dwheeler.com/secure-programs/)
     [Gopher Guide to security](https://go.dev/doc/security/)
     [Go-SCP - OWASP](https://github.com/OWASP/Go-SCP)
+
+
+Traditonal TODOs
+* Make error handling prettier with a Error Method (for all methods in ./methods)
+* Get privelage exec in the works
+* add a CLI
