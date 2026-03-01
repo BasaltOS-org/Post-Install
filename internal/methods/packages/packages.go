@@ -22,8 +22,7 @@ type PackageGroup struct {
 
 
 func (p PackageGroup) Install() (success bool, err error){
-	// TODO: Use Polkit or the cli frontend depending on the context to check / ask for sudo perms when applicable
-	// For Now lets assume the user is always running as root
+	// These should always be run as sudo, It is the job of the frontend of choice to provide those privelages
 	utils.Logger.Info(fmt.Sprintf("Executed Install for %v", p.Name))
 
 	for _, pkg := range p.Packages { // Install each package one by one since that's less error prone
