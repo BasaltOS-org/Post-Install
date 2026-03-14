@@ -21,12 +21,12 @@ type PackageGroup struct {
 
 
 
-func (p PackageGroup) Install() (success bool, err error){
+func (p PackageGroup) Install() (err error){
 	// These should always be run as sudo, It is the job of the frontend of choice to provide those privelages
 	utils.Logger.Info(fmt.Sprintf("Executed Install for %v", p.Name))
 
 	for _, pkg := range p.Packages { // Install each package one by one since that's less error prone
-		cmd := exec.Command("dnf", "install", "-y", pkg) // -y assumes yes and doesnt prompt for confirm
+		cmd := exec.Command("sudo", "dnf", "install", "-y", pkg) // -y assumes yes and doesnt prompt for confirm
 		utils.Logger.Info(fmt.Sprintf("Installing Package from Group: %v", p.Name))
 
 		// cmd.CombinedOutput() returns the output and error (if any), in the future output itself would be useless (in the context of the gui)
@@ -34,11 +34,11 @@ func (p PackageGroup) Install() (success bool, err error){
 		if out, err := cmd.CombinedOutput(); err != nil { 
 			utils.Logger.Error(fmt.Sprintf("error returned %v", err))
 			utils.Logger.Error(fmt.Sprintf("output for debug %v \t", string(out)))
-			return false, err
+			return err
 		}
 			
 	}
-	return true, err
+	return nil
 }
 
 
@@ -47,24 +47,23 @@ func (p PackageGroup) View() PackageGroup {
 	return p
 }
 
-func (p PackageGroup) Delete() (success bool, err error){
-// TODO: Use Polkit or the cli frontend depending on the context to check / ask for sudo perms when applicable
-// For Now lets assume the user is always running as root
+func (p PackageGroup) Remove() (err error){
+	// assume user is running as root
 	utils.Logger.Info(fmt.Sprintf("Executed Delete() for %v", p.Name))
 	utils.Logger.Info(fmt.Sprintf(" for %v", p.Name))
 	
 	for _, pkg := range p.Packages {	
-		cmd := exec.Command("dnf", "remove", "-y",pkg )
+		cmd := exec.Command("sudo", "-c", "dnf", "remove", "-y",pkg )
 
 		if out, err := cmd.CombinedOutput(); err != nil {
 			utils.Logger.Error(fmt.Sprintf("Error returned %v", err))
 			utils.Logger.Error(fmt.Sprintf("Output for debug %v", string(out)))
-			return false, err
+			return err
 		}
 		utils.Logger.Info(fmt.Sprintf("Deleting Packages from Group: %v", p.Name))
 		utils.Logger.Info(fmt.Sprintf("Deleting Packages: %+v", p.Packages))
 
 	}
-	return true, nil
+	return nil
 }
 
