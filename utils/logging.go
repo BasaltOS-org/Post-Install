@@ -18,7 +18,7 @@ func InitLogger() {
 		log.Fatal("Error encountered when creating directory: ", err)
 	}
 
-	logPath := filepath.Join(rootLogDir, time.Now().String() + ".log")
+	logPath := filepath.Join(rootLogDir, time.Now().Format("2006-01-02 15:04") + ".log")
 	file, err := os.Create(logPath)
 	if err != nil {
 		log.Fatal("error when creating log file", err)

@@ -27,15 +27,16 @@ func (p PackageGroup) Install() (err error){
 
 	for _, pkg := range p.Packages { // Install each package one by one since that's less error prone
 		cmd := exec.Command("sudo", "dnf", "install", "-y", pkg) // -y assumes yes and doesnt prompt for confirm
-		utils.Logger.Info(fmt.Sprintf("Installing Package from Group: %v", p.Name))
+		utils.Logger.Info("Installing Package Group", "Group", p.Name)
 
 		// cmd.CombinedOutput() returns the output and error (if any), in the future output itself would be useless (in the context of the gui)
 		// but for ease of development it will be logged but not returned, in the future this value could be discarded
 		if out, err := cmd.CombinedOutput(); err != nil { 
-			utils.Logger.Error(fmt.Sprintf("error returned %v", err))
+			utils.Logger.Error("error returned", "error", err)
 			utils.Logger.Error(fmt.Sprintf("output for debug %v \t", string(out)))
 			return err
 		}
+		utils.Logger.Info("Installed Package Group", "Group Name", p.Name, "Packages", p.Packages)
 			
 	}
 	return nil
@@ -43,25 +44,25 @@ func (p PackageGroup) Install() (err error){
 
 
 func (p PackageGroup) View() PackageGroup {
-	utils.Logger.Info(fmt.Sprintf("Executed View() for: %v", p.Name))
+	utils.Logger.Info("Executed View() for","Group", p.Name)
 	return p
 }
 
 func (p PackageGroup) Remove() (err error){
 	// assume user is running as root
-	utils.Logger.Info(fmt.Sprintf("Executed Delete() for %v", p.Name))
-	utils.Logger.Info(fmt.Sprintf(" for %v", p.Name))
+	utils.Logger.Info("Executed Delete()", "Group", p.Name)
 	
 	for _, pkg := range p.Packages {	
-		cmd := exec.Command("sudo", "-c", "dnf", "remove", "-y",pkg )
+		cmd := exec.Command("sudo", "dnf", "remove", "-y",pkg )
+		utils.Logger.Info("Removing Package", "package", pkg)
+		fmt.Println("Removing Package: ", pkg)
 
 		if out, err := cmd.CombinedOutput(); err != nil {
-			utils.Logger.Error(fmt.Sprintf("Error returned %v", err))
+			utils.Logger.Error("Error returned", "error", err)
 			utils.Logger.Error(fmt.Sprintf("Output for debug %v", string(out)))
 			return err
 		}
-		utils.Logger.Info(fmt.Sprintf("Deleting Packages from Group: %v", p.Name))
-		utils.Logger.Info(fmt.Sprintf("Deleting Packages: %+v", p.Packages))
+		utils.Logger.Info("Deleted Package Group", "Group Name", p.Name, "Packages", p.Packages)
 
 	}
 	return nil
