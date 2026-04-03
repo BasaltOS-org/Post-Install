@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"BasaltPostInstallAssistant/internal/methods/packages"
-	"BasaltPostInstallAssistant/utils"
 	"context"
 	"fmt"
 	"os"
@@ -19,6 +18,7 @@ func cmdPackage() *cli.Command {
 		Commands: []*cli.Command{
 			packageInstall(),
 			packageRemove(),
+			packageList(),
 		},
 	}
 	return cmd
@@ -32,21 +32,19 @@ func packageInstall() *cli.Command {
 		Description: "This command is used to install groups of packages, Run the Command TBD to view the available list of packages\n" +
 		"all packages installed are from the official repositories and are handpicked by the developers to ensure compatibility.",
 		Action: func(ctx context.Context, c *cli.Command) error {
-			pkgGrp := os.Args[3] // this should only be the PackageGroup they want to install
+			pkgGrp := c.Args().Slice()
 
-			pkg, err := packages.DeterminePkg(pkgGrp)
-			if err != nil {
-				fmt.Println(err.Error())
-				os.Exit(1)
-			}
+			for _, i := range pkgGrp {
+				pkg, err := packages.DeterminePkg(i)
+				if err != nil {
+					fmt.Println(err.Error())
+					os.Exit(1)
+				}
 
-			err = pkg.Install()
-			if err != nil {
-				fmt.Println("error encountered", err)
-				utils.Logger.Error("error encountered", "error", err)
-				os.Exit(1)
+				if err = pkg.Install(); err != nil {
+					fmt.Println(err)
+				}
 			}
-			utils.Logger.Info("successfully installed package")
 			return nil
 		},
 		
@@ -63,8 +61,45 @@ func packageRemove() *cli.Command {
 		Description: "This command is used to uninstall groups of packages, Run the Command TBD to view installed package groups",
 		UsageText: "package remove [packageGroup]... [flags]",
 		Action: func(ctx context.Context, c *cli.Command) error {
-			fmt.Println("removed")
-			return  nil
+			pkgGrp := c.Args().Slice()
+			
+			for _, i := range pkgGrp {
+				pkg, err := packages.DeterminePkg(i)
+				if err != nil {
+					fmt.Println(err.Error())
+					os.Exit(1)
+				}
+				if err = pkg.Remove(); err != nil {
+					fmt.Println(err)
+				}
+			}
+		return  nil
+		},
+	}
+
+	return cmd
+}
+
+func packageList() *cli.Command {
+	cmd := &cli.Command{
+		Name: "list",
+		Aliases: []string{"l", "show", "sh"},
+		Flags: []cli.Flag{
+			
+			&cli.BoolFlag {
+				Name: "installed",
+				Value: true,
+				Aliases: []string{"in"},
+			},
+		},
+		Description: "This command is used to View package groups, Use flags to filter",
+		UsageText: "package remove [packageGroup]... [flags]",
+		Action: func(ctx context.Context, c *cli.Command) error {
+			if c.Bool("installed") == true {
+			} else {
+				
+			}
+			return nil
 		},
 	}
 	return cmd
