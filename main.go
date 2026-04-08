@@ -2,6 +2,7 @@ package main
 
 import (
 	"BasaltPostInstallAssistant/cmd"
+	"BasaltPostInstallAssistant/internal/database"
 	"BasaltPostInstallAssistant/internal/methods/packages"
 	"BasaltPostInstallAssistant/utils"
 	"context"
@@ -18,6 +19,8 @@ var ErrNotRoot = fmt.Errorf("User is not root")
 func init() {
 	utils.InitLogger()
 	packages.InitPackageMap()
+	database.OpenDB()
+	database.MakeTable()
 }
 
 func privCheck() bool {

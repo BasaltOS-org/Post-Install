@@ -14,10 +14,12 @@ var PackageMap map[int]PackageGroup
 func InitPackageMap(){
 	PackageMap = make(map[int]PackageGroup)
 	PackageMap[NVIDIAPACKAGES] = PackageGroup{
+		PackageID: NVIDIAPACKAGES,
 		Name: "nvidia",
 		Packages: []string{"go", "vim"}, // Placeholders, obviously these are not NVIDIA packages
 	}
 	PackageMap[DEVELOPMENTPACKAGES] = PackageGroup{
+		PackageID: DEVELOPMENTPACKAGES,
 		Name: "development",
 		Packages: []string{"git", "go"},
 	}
