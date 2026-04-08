@@ -1,8 +1,8 @@
 package packages
 
 import (
-	"BasaltPostInstallAssistant/internal/database"
-	"BasaltPostInstallAssistant/utils"
+	"PostInstall/internal/database"
+	"PostInstall/utils"
 	"database/sql"
 	"fmt"
 	"os/exec"

@@ -2,7 +2,7 @@
 package database
 
 import (
-	"BasaltPostInstallAssistant/utils"
+	"PostInstall/utils"
 	"database/sql"
 	"os"
 

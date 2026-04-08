@@ -1,10 +1,10 @@
 package main
 
 import (
-	"BasaltPostInstallAssistant/cmd"
-	"BasaltPostInstallAssistant/internal/database"
-	"BasaltPostInstallAssistant/internal/methods/packages"
-	"BasaltPostInstallAssistant/utils"
+	"PostInstall/cmd"
+	"PostInstall/internal/database"
+	"PostInstall/internal/methods/packages"
+	"PostInstall/utils"
 	"context"
 	"fmt"
 	"os"

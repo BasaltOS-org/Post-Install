@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"BasaltPostInstallAssistant/internal/methods/packages"
+	"PostInstall/internal/methods/packages"
 	"context"
 	"fmt"
 	"os"
