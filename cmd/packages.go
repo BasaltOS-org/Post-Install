@@ -43,6 +43,7 @@ func packageInstall() *cli.Command {
 
 				if err = pkg.Install(); err != nil {
 					fmt.Println(err)
+					return err
 				}
 			}
 			return nil
@@ -96,6 +97,7 @@ func packageList() *cli.Command {
 		UsageText: "package remove [packageGroup]... [flags]",
 		Action: func(ctx context.Context, c *cli.Command) error {
 			if c.Bool("installed") == true {
+				
 			} else {
 				
 			}
