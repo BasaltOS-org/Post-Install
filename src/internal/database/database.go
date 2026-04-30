@@ -1,6 +1,7 @@
 package database
 
 import (
+	"PostInstall/internal/methods/packages"
 	"PostInstall/utils"
 	"encoding/json"
 	"fmt"
@@ -9,12 +10,12 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
+var ErrNotFound = fmt.Errorf("package not found")
 
-type PackageMap map[string][]string 
+type PackageMap map[string]packages.PackageGroup
 
-
-func openDb() (*bolt.DB, error){
-	db, err := bolt.Open("../packages.db", 0440, &bolt.Options{ReadOnly: true})
+func openDb() (*bolt.DB, error) {
+	db, err := bolt.Open("../packages.db", 0666, bolt.DefaultOptions)
 	if err != nil {
 		return nil, fmt.Errorf("error encountered %w", err)
 	}
@@ -22,43 +23,49 @@ func openDb() (*bolt.DB, error){
 	return db, nil
 }
 
-func GetPackage(key string) []string {
+func GetPackageGroup(key string) (packages.PackageGroup, error) {
 	db, err := openDb()
 	if err != nil {
 		utils.Logger.Error("GetPackage: ", "error", err)
 		os.Exit(1)
 	}
+	defer db.Close()
 
 	var data []byte
 
-	db.View(func(tx *bolt.Tx) error {
+	err = db.View(func(tx *bolt.Tx) error {
 		buck := tx.Bucket([]byte("packages"))
 		data = buck.Get([]byte(key))
+		if data == nil {
+			return ErrNotFound
+		}
 
 		return nil
 
 	})
+	if err != nil {
+		return packages.PackageGroup{}, ErrNotFound
+	}
 
 	// values have been Marshalled to JSON, Unmarshalling is required; See _init_DB/main.go
-	var value []string
+	var value packages.PackageGroup
 	err = json.Unmarshal(data, &value)
 	if err != nil {
-		utils.Logger.Error("GetPackage: ", "error", err)
+		utils.Logger.Error("GetPackageGroup: ", "error", err)
 		os.Exit(1)
 	}
 
-	return value
+	return value, nil
 
 }
 
-
-
 func ListPackages() PackageMap {
-	db, err := openDb() 
+	db, err := openDb()
 	if err != nil {
 		utils.Logger.Error("ListPackages: ", "error", err)
 		os.Exit(1)
 	}
+	defer db.Close()
 
 	pmap := make(PackageMap)
 
@@ -67,8 +74,8 @@ func ListPackages() PackageMap {
 		buck.ForEach(func(k, v []byte) error {
 
 			// values have been Marshalled to JSON, Unmarshalling is required; See _init_DB/main.go
-			var val []string 
- 			err := json.Unmarshal(v, &val)
+			var val packages.PackageGroup
+			err := json.Unmarshal(v, &val)
 			if err != nil {
 				return err
 			}
@@ -85,5 +92,38 @@ func ListPackages() PackageMap {
 	}
 
 	return pmap
+
+}
+
+// UpdateStatus Updates a package's Installed boolean to the supplied argument
+func UpdateInstalledStatus(key string, status bool) error {
+	db, err := openDb()
+	if err != nil {
+		utils.Logger.Error("UpdateInstalledStatus: ", "error", err)
+		os.Exit(1)
+	}
+
+	var val packages.PackageGroup
+
+	err = db.Update(func(tx *bolt.Tx) error {
+		buck := tx.Bucket([]byte("packages"))
+
+		data := buck.Get([]byte(key))
+
+		err := json.Unmarshal(data, &val)
+		if err != nil {
+			return err
+		}
+		val.Installed = status
+		newData, _ := json.Marshal(val)
+
+		err = buck.Put([]byte(key), newData)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+
+	return err
 
 }

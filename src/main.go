@@ -38,11 +38,9 @@ func main() {
 		os.Exit(1)
 	}
 
-
 	cmd := &cli.Command{
-		Commands:    cmd.InitCmds(),
+		Commands: cmd.InitCmds(),
 	}
 	cmd.Run(context.Background(), os.Args)
-
 
 }

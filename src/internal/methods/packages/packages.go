@@ -2,47 +2,42 @@ package packages
 
 import (
 	"PostInstall/utils"
-	"fmt"
 	"os/exec"
 )
 
-type Packages []string
+type PackageGroup struct {
+	Packages  []string `json:"packages"`
+	Installed bool     `json:"installed"`
+}
 
-func Install(p Packages) error {
+func Install(p *PackageGroup) error {
 	// assume running as root
-	utils.Logger.Info("Installing Packages", "Packages", p) 	
+	utils.Logger.Info("Installing Packages", "Packages", p)
 	arguments := []string{"install", "-y"}
-	arguments = append(arguments, p...)
-	fmt.Println(arguments)
+	arguments = append(arguments, p.Packages...)
 
 	cmd := exec.Command("/usr/bin/dnf", arguments...)
-	
 
 	_, err := cmd.CombinedOutput()
 	if err != nil {
 		utils.Logger.Error("error returned", "error", err)
 		return err
 	}
-
-
-	utils.Logger.Info("Installed Packages", "Packages", p)	
+	utils.Logger.Info("Installed Packages", "Packages", p)
 	return nil
 }
 
-
-func Remove(p Packages) error {
+func Remove(p *PackageGroup) error {
 	// assume user is running as root
-		arguments := []string{"remove", "-y"}
-		arguments = append(arguments, p...)
-		fmt.Println(arguments)
+	arguments := []string{"remove", "-y"}
+	arguments = append(arguments, p.Packages...)
 
-		cmd := exec.Command("/usr/bin/dnf", arguments...)
+	cmd := exec.Command("/usr/bin/dnf", arguments...)
 
-		if _, err := cmd.CombinedOutput(); err != nil {
-			utils.Logger.Error("Error returned", "error", err)
-			return err
-		}
+	if _, err := cmd.CombinedOutput(); err != nil {
+		utils.Logger.Error("Error returned", "error", err)
+		return err
+	}
 	utils.Logger.Info("Removed Package Group with", "Packages", p)
 	return nil
 }
-

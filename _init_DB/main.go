@@ -15,7 +15,12 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-type PackageMap map[string][]string
+type PackageGroup struct {
+	Packages  []string `json:"packages"`
+	Installed bool     `json:"installed"`
+}
+
+type PackageMap map[string]PackageGroup
 
 func initDb() *bolt.DB {
 	db, err := bolt.Open("../packages.db", 0666, bolt.DefaultOptions)
@@ -57,8 +62,14 @@ func writePackages(Pmap *PackageMap) {
 
 func main() {
 	Pmap := make(PackageMap)
-	Pmap["Development"] = []string{"git", "go"}
-	Pmap["NVIDIA"] = []string{"git", "go"}
+	Pmap["Development"] = PackageGroup{
+		Packages:  []string{"git", "go"},
+		Installed: false,
+	}
+	Pmap["NVIDIA"] = PackageGroup{
+		Packages:  []string{"git", "go"},
+		Installed: false,
+	}
 
 	writePackages(&Pmap)
 
