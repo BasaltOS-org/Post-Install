@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"PostInstall/internal/database"
 	"PostInstall/internal/methods/packages"
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/urfave/cli/v3"
 )
@@ -34,14 +34,10 @@ func packageInstall() *cli.Command {
 		Action: func(ctx context.Context, c *cli.Command) error {
 			pkgGrp := c.Args().Slice()
 
-			for _, i := range pkgGrp {
-				pkg, err := packages.DeterminePkg(i)
-				if err != nil {
-					fmt.Println(err.Error())
-					os.Exit(1)
-				}
+			for _, val := range pkgGrp {
+				pkg := database.GetPackage(val)
 
-				if err = pkg.Install(); err != nil {
+				if err := packages.Install(pkg); err != nil {
 					fmt.Println(err)
 					return err
 				}
@@ -64,17 +60,15 @@ func packageRemove() *cli.Command {
 		Action: func(ctx context.Context, c *cli.Command) error {
 			pkgGrp := c.Args().Slice()
 			
-			for _, i := range pkgGrp {
-				pkg, err := packages.DeterminePkg(i)
-				if err != nil {
-					fmt.Println(err.Error())
-					os.Exit(1)
-				}
-				if err = pkg.Remove(); err != nil {
+			for _, val := range pkgGrp {
+				pkg := database.GetPackage(val)
+
+				if err := packages.Remove(pkg); err != nil {
 					fmt.Println(err)
+					return err
 				}
 			}
-		return  nil
+			return nil
 		},
 	}
 
@@ -84,22 +78,15 @@ func packageRemove() *cli.Command {
 func packageList() *cli.Command {
 	cmd := &cli.Command{
 		Name: "list",
-		Aliases: []string{"l", "show", "sh"},
-		Flags: []cli.Flag{
-			
-			&cli.BoolFlag {
-				Name: "installed",
-				Value: true,
-				Aliases: []string{"in"},
-			},
-		},
-		Description: "This command is used to View package groups, Use flags to filter",
+		Aliases: []string{"ls", "show", "sh"},
+		Description: "This command is used to View package groups that can be installed",
 		UsageText: "package remove [packageGroup]... [flags]",
 		Action: func(ctx context.Context, c *cli.Command) error {
-			if c.Bool("installed") == true {
-				
-			} else {
-				
+
+			pmap := database.ListPackages()
+
+			for key, val := range pmap {
+				fmt.Printf("Package Group Name: %v For Packages: %+v\n", key, val)
 			}
 			return nil
 		},

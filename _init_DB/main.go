@@ -18,7 +18,7 @@ import (
 type PackageMap map[string][]string
 
 func initDb() *bolt.DB {
-	db, err := bolt.Open("packages.db", 0666, bolt.DefaultOptions)
+	db, err := bolt.Open("../packages.db", 0666, bolt.DefaultOptions)
 	if err != nil {
 		log.Fatalf("error encountered %v", err)
 	}
@@ -50,6 +50,7 @@ func writePackages(Pmap *PackageMap) {
 				return fmt.Errorf("error encountered %w", err)
 			}
 		}
+		fmt.Println("Finished Writing Packages to Database")
 		return nil
 	})
 }
@@ -58,5 +59,7 @@ func main() {
 	Pmap := make(PackageMap)
 	Pmap["Development"] = []string{"git", "go"}
 	Pmap["NVIDIA"] = []string{"git", "go"}
+
+	writePackages(&Pmap)
 
 }

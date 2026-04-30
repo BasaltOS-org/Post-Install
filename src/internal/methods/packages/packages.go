@@ -6,64 +6,43 @@ import (
 	"os/exec"
 )
 
+type Packages []string
 
+func Install(p Packages) error {
+	// assume running as root
+	utils.Logger.Info("Installing Packages", "Packages", p) 	
+	arguments := []string{"install", "-y"}
+	arguments = append(arguments, p...)
+	fmt.Println(arguments)
 
-type PackageGroup struct {
-	PackageID int
-	Name string
-	Packages []string
-}
+	cmd := exec.Command("/usr/bin/dnf", arguments...)
+	
 
-
-
-func (p PackageGroup) Install() error {
-
-	// These should always be run as sudo, It is the job of the frontend of choice to provide those privelages
-	utils.Logger.Info("Executed Install", "pkgName", p.Name, "pkgID", p.PackageID)
-
-
-	utils.Logger.Info("Installing Packages", "Packages", p.Packages) 
-	for _, pkg := range p.Packages { // Install each package one by one since that's less error prone
-		cmd := exec.Command("dnf", "install", "-y", pkg) // -y assumes yes and doesn't prompt for confirm
-		fmt.Println("Installing Package:", pkg)
-
-		_, err := cmd.CombinedOutput()
-		if err != nil {
-			utils.Logger.Error("error returned", "error", err)
-			return err
-		}
-
-		fmt.Println("Installed Package", pkg)
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		utils.Logger.Error("error returned", "error", err)
+		return err
 	}
 
-	utils.Logger.Info("Installed Package Group", "Group Name", p.Name, "Packages", p.Packages)	
+
+	utils.Logger.Info("Installed Packages", "Packages", p)	
 	return nil
 }
 
 
-func (p PackageGroup) Remove() error {
+func Remove(p Packages) error {
 	// assume user is running as root
-	utils.Logger.Info("Executed Delete()", "Group", p.Name)
-	
-	for _, pkg := range p.Packages {	
-		cmd := exec.Command("dnf", "remove", "-y",pkg )
+		arguments := []string{"remove", "-y"}
+		arguments = append(arguments, p...)
+		fmt.Println(arguments)
 
-		utils.Logger.Info("Removing Package", "package", pkg)
-		fmt.Println("Removing Package:", pkg)
+		cmd := exec.Command("/usr/bin/dnf", arguments...)
 
-		_, err := cmd.CombinedOutput() 
-		
-		if err != nil {
+		if _, err := cmd.CombinedOutput(); err != nil {
 			utils.Logger.Error("Error returned", "error", err)
 			return err
 		}
-		
-
-		fmt.Println("Removed Package", pkg)
-		utils.Logger.Info("Removed Package", "package", pkg)
-
-	}
-	utils.Logger.Info("Deleted Package Group", "Group Name", p.Name, "Packages", p.Packages)
+	utils.Logger.Info("Removed Package Group with", "Packages", p)
 	return nil
 }
 

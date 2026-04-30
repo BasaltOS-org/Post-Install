@@ -13,7 +13,7 @@ var Logger *slog.Logger
 
 func InitLogger() {
 	const rootLogDir string = "./logs"
-	err := os.MkdirAll(rootLogDir, 0755)
+	err := os.MkdirAll(rootLogDir, 0777)
 	if err != nil {
 		log.Fatal("Error encountered when creating directory: ", err)
 	}
@@ -24,9 +24,8 @@ func InitLogger() {
 		log.Fatal("error when creating log file", err)
 	}
 
-	logHandler := slog.NewTextHandler( file, &slog.HandlerOptions{AddSource: true,})
+	logHandler := slog.NewTextHandler(file, &slog.HandlerOptions{AddSource: true,})
 	Logger = slog.New(logHandler)
 
 	fmt.Printf("Current LogFile: %v \n", logPath)
-	defer file.Close()
 }

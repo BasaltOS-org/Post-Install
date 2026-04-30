@@ -2,8 +2,6 @@ package main
 
 import (
 	"PostInstall/cmd"
-	"PostInstall/internal/database"
-	"PostInstall/internal/methods/packages"
 	"PostInstall/utils"
 	"context"
 	"fmt"
@@ -18,9 +16,6 @@ var ErrNotRoot = fmt.Errorf("User is not root")
 
 func init() {
 	utils.InitLogger()
-	packages.InitPackageMap()
-	database.OpenDB()
-	database.MakeTable()
 }
 
 func privCheck() bool {
